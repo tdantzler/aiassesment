@@ -1,0 +1,3599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Opportunity Assessment — Knowlogix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #fafaf7;
+    --paper-2: #f3f2ec;
+    --paper-3: #edece4;
+    --ink: #1a1a1c;
+    --ink-soft: #3d3d40;
+    --ink-dim: #6a6a6e;
+    --ink-faint: #9b9a94;
+    --rule: #d9d6cc;
+    --rule-soft: #e6e3d8;
+    --accent: #d14f0a;        /* Knowlogix orange, shifted slightly for readability on paper */
+    --accent-soft: #e8773d;
+    --accent-bg: #fdf1e8;
+    --accent-border: #f5ceb0;
+    --green: #2d7a4e;
+    --green-bg: #eaf4ed;
+    --red: #9e2a2a;
+    --red-bg: #f7ebeb;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-feature-settings: "ss01";
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse 900px 500px at 100% 0%, rgba(209,79,10,0.05), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 0% 100%, rgba(209,79,10,0.03), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  /* Subtle paper texture */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0.025;
+    z-index: 1000;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .console {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 36px 100px;
+  }
+
+  /* ------- HEADER ------- */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 32px;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .brand-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-tag .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(38px, 5vw, 58px);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .business-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+  }
+
+  .business-field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .business-field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink);
+    text-align: right;
+    outline: none;
+    min-width: 240px;
+    transition: border-color 0.15s ease;
+  }
+
+  .business-field input:focus {
+    border-bottom-color: var(--accent);
+  }
+
+  .business-field input::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  .meta-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+
+  /* ------- LAYOUT ------- */
+  .grid {
+    display: block;
+  }
+
+  @media (max-width: 960px) {
+    .console { padding: 24px 18px 80px; }
+    header { grid-template-columns: 1fr; }
+    .header-meta { text-align: left; align-items: flex-start; }
+    .business-field { align-items: flex-start; }
+    .business-field input { text-align: left; }
+  }
+
+  /* ------- TOP NAV BAR ------- */
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250,250,247,0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+    margin: 0 -36px 32px;
+    padding: 0 36px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+  }
+
+  @media (max-width: 960px) {
+    .tabs {
+      margin: 0 -18px 24px;
+      padding: 0 10px;
+      justify-content: flex-start;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+  }
+
+  .tabs-label {
+    display: none;
+  }
+
+  .tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 12px 16px;
+    color: var(--ink-dim);
+    text-align: center;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 13px;
+    transition: all 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    position: relative;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .tab:hover {
+    color: var(--ink);
+    border-bottom-color: var(--ink-faint);
+    background: rgba(0,0,0,0.015);
+    border-left: none;
+  }
+
+  .tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+    background: transparent;
+    border-left: none;
+  }
+
+  .tab-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  .tab.active .tab-num { color: var(--accent); }
+
+  .tab-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .tab-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.2;
+    font-size: 13px;
+    text-align: center;
+    max-width: 90px;
+  }
+
+  .tab-pain {
+    display: none;
+  }
+
+  /* ------- PANELS ------- */
+  .panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .panel.active { display: block; max-width: 900px; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-head {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 22px;
+    margin-bottom: 28px;
+  }
+
+  .panel-kicker {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .panel-title {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+
+  .panel-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .panel-sub {
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 68ch;
+    line-height: 1.65;
+    font-family: var(--serif);
+  }
+
+  /* ------- MEASURING CONTEXT BOX ------- */
+  .context {
+    background: var(--paper-2);
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid var(--accent);
+    padding: 22px 26px;
+    margin-bottom: 28px;
+  }
+
+  .context-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .context h3 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .context p {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+
+  .context p:last-child { margin-bottom: 0; }
+
+  .context .benchmark {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    background: var(--paper);
+    padding: 8px 12px;
+    border: 1px solid var(--rule-soft);
+    margin-top: 12px;
+    display: inline-block;
+  }
+
+  .context .benchmark strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ------- INPUTS ------- */
+  .inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+
+  .field {
+    background: var(--paper);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.15s ease;
+  }
+
+  .field:focus-within { background: #fff; }
+
+  .field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .field .hint {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .field input {
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 400;
+    outline: none;
+    width: 100%;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.15s ease;
+  }
+
+  .field input:focus { border-bottom-color: var(--accent); }
+
+  .field .prefix {
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 14px;
+    margin-right: 4px;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: baseline;
+  }
+
+  /* ------- TOOLTIP ------- */
+  .tip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px; height: 15px;
+    margin-left: 4px;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 9px;
+    cursor: help;
+    position: relative;
+    transition: all 0.15s ease;
+    background: var(--paper);
+    flex-shrink: 0;
+  }
+
+  .tip-icon:hover, .tip-icon:focus {
+    color: var(--accent);
+    border-color: var(--accent);
+    outline: none;
+    z-index: 1001;
+  }
+
+  .tip-icon .tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    border: 1px solid var(--ink);
+    padding: 12px 14px;
+    width: 280px;
+    font-family: var(--serif);
+    font-size: 12.5px;
+    font-style: italic;
+    line-height: 1.55;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 1000;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    text-align: left;
+  }
+
+  .tip-icon .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+
+  .tip-icon:hover .tooltip,
+  .tip-icon:focus .tooltip,
+  .tip-icon:active .tooltip {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ------- MATH BREAKDOWN ------- */
+  .math {
+    background: var(--paper-2);
+    border: 1px solid var(--rule-soft);
+    padding: 22px 26px;
+    margin-bottom: 24px;
+  }
+
+  .math-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 14px;
+  }
+
+  .math-chain {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 2;
+    color: var(--ink-soft);
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 6px;
+  }
+
+  .math-chain .v {
+    color: var(--ink);
+    background: var(--paper);
+    padding: 2px 7px;
+    border-radius: 2px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .math-chain .op { color: var(--ink-faint); padding: 0 6px; }
+
+  /* ------- RESULT CARD ------- */
+  .result {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--accent-border);
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 700px) {
+    .result { grid-template-columns: 1fr; }
+  }
+
+  .result-cell {
+    background: var(--paper);
+    padding: 24px 26px;
+  }
+
+  .result-cell.primary {
+    background: var(--accent-bg);
+  }
+
+  .result-cell .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .result-cell .value {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .result-cell.primary .value {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .result-cell .value .cur {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-style: normal;
+    vertical-align: top;
+    margin-right: 2px;
+    color: var(--ink-dim);
+    font-weight: 400;
+  }
+
+  .result-cell.primary .value .cur { color: var(--accent-soft); }
+
+  .result-cell .sub {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-family: var(--serif);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* ------- FINDINGS NOTE ------- */
+  .finding {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+
+  .finding-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .finding-text {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  .finding-text .num {
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--accent);
+    padding: 0 2px;
+  }
+
+  /* ------- CHANNEL PICKER ------- */
+  .channel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+
+  .chan-toggle {
+    background: var(--paper);
+    border: none;
+    padding: 14px 12px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.15s ease;
+    color: var(--ink-faint);
+    position: relative;
+    font-family: var(--sans);
+  }
+
+  .chan-toggle:hover {
+    background: var(--paper-2);
+    color: var(--ink-dim);
+  }
+
+  .chan-toggle.on {
+    background: var(--accent-bg);
+    color: var(--ink);
+  }
+
+  .chan-toggle.on::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .chan-toggle .chan-icon {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chan-toggle .chan-icon::before {
+    content: "○";
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .chan-toggle.on .chan-icon::before {
+    content: "●";
+    color: var(--accent);
+  }
+
+  .chan-toggle.on .chan-icon { color: var(--accent); }
+
+  .chan-toggle .chan-name {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.1;
+  }
+
+  /* ------- CHANNEL MODULE ------- */
+  .chan-module {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--accent);
+    margin-bottom: 14px;
+    animation: slideDown 0.25s ease;
+    position: relative;
+  }
+
+  .chan-module.hidden { display: none; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chan-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--rule-soft);
+    gap: 16px;
+    flex-wrap: wrap;
+    background: var(--paper-2);
+  }
+
+  .chan-head .chan-label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .chan-head .chan-label::before {
+    content: attr(data-num);
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+
+  .chan-head .chan-measuring {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-dim);
+    max-width: 60%;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 700px) {
+    .chan-head .chan-measuring { max-width: 100%; text-align: left; }
+  }
+
+  .chan-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--rule-soft);
+  }
+
+  .chan-inputs .field { padding: 12px 14px; }
+  .chan-inputs .field label { font-size: 9px; }
+  .chan-inputs .field input { font-size: 18px; }
+  .chan-inputs .field .hint { font-size: 11px; }
+
+  .chan-totals {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--rule-soft);
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  @media (max-width: 700px) { .chan-totals { grid-template-columns: 1fr; } }
+
+  .chan-total {
+    background: var(--paper-2);
+    padding: 12px 18px;
+  }
+
+  .chan-total .lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 4px;
+  }
+
+  .chan-total .val {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .chan-total .val .cur {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-right: 2px;
+    font-weight: 400;
+  }
+
+  .chan-total.primary .val { color: var(--accent); }
+
+  /* Math tooltip on chan-total cells */
+  .chan-total {
+    position: relative;
+  }
+
+  .chan-total .math-tip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px; height: 13px;
+    margin-left: 4px;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 8px;
+    cursor: help;
+    background: var(--paper);
+    vertical-align: middle;
+    transition: all 0.15s ease;
+  }
+
+  .chan-total .math-tip:hover,
+  .chan-total .math-tip:focus {
+    color: var(--accent);
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .chan-total .math-pop {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 16px;
+    width: 320px;
+    max-width: calc(100vw - 40px);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    text-align: left;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .chan-total .math-pop::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+
+  .chan-total .math-tip:hover + .math-pop,
+  .chan-total .math-tip:focus + .math-pop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .chan-total .math-pop .mp-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--accent-soft);
+    margin-bottom: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .chan-total .math-pop .mp-step {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.1);
+  }
+
+  .chan-total .math-pop .mp-step:last-child {
+    border-bottom: none;
+    padding-top: 6px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    color: var(--accent-soft);
+  }
+
+  .chan-total .math-pop .mp-step .mp-label {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .chan-total .math-pop .mp-step .mp-val {
+    color: #fff;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  /* ========== AUTO-PULL FIELD ========== */
+  .autopull-field {
+    background: var(--paper);
+    padding: 18px 20px;
+    border: 1px solid var(--rule);
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .autopull-field .ap-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .autopull-field .ap-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .autopull-field .ap-toggle {
+    display: inline-flex;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 2px;
+    font-size: 0;
+  }
+
+  .autopull-field .ap-toggle button {
+    background: transparent;
+    border: none;
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .autopull-field .ap-toggle button.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .autopull-field .ap-value {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .autopull-field .ap-value input {
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 400;
+    outline: none;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.15s ease;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .autopull-field .ap-value input:focus {
+    border-bottom-color: var(--accent);
+  }
+
+  .autopull-field .ap-value input:read-only {
+    color: var(--accent);
+    border-bottom-color: var(--accent-border);
+    background: var(--accent-bg);
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: not-allowed;
+  }
+
+  .autopull-field .ap-unit {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-dim);
+  }
+
+  .autopull-field .ap-breakdown {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    background: var(--paper-2);
+    padding: 10px 14px;
+    border-left: 2px solid var(--accent);
+    margin-top: 4px;
+  }
+
+  .autopull-field .ap-breakdown.empty {
+    color: var(--ink-faint);
+    font-style: italic;
+    font-family: var(--serif);
+    font-size: 12px;
+    border-left-color: var(--rule);
+  }
+
+  .autopull-field .ap-breakdown .ap-chan {
+    display: inline-block;
+    background: var(--paper);
+    padding: 2px 8px;
+    margin-right: 4px;
+    border: 1px solid var(--accent-border);
+    color: var(--ink);
+  }
+
+  .autopull-field .ap-breakdown .ap-op {
+    color: var(--ink-faint);
+    margin: 0 4px;
+  }
+
+  .autopull-field .ap-breakdown .ap-eq {
+    color: var(--accent);
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  /* ========== PHONE DEEP SPLIT ========== */
+  .phone-industry-row {
+    display: flex;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 0;
+  }
+
+  .phone-industry-row .field { flex: 1; }
+
+  .phone-industry-row select {
+    background: var(--paper);
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    outline: none;
+    width: 100%;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239b9a94' stroke-width='1.5' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    padding-right: 20px;
+  }
+
+  .phone-industry-row select:focus {
+    border-bottom-color: var(--accent);
+  }
+
+  .phone-split-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding: 14px 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--paper);
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
+
+  .phone-split-bar {
+    display: flex;
+    height: 8px;
+    margin: 8px 14px 0;
+    background: var(--paper-3);
+    overflow: hidden;
+  }
+
+  .phone-split-bar .seg-answered {
+    background: var(--green);
+    transition: width 0.25s ease;
+  }
+
+  .phone-split-bar .seg-missed {
+    background: var(--red);
+    border-left: 1px solid var(--paper);
+    transition: width 0.25s ease;
+  }
+
+  .phone-split-bar .seg-delayed {
+    background: var(--accent);
+    border-left: 1px solid var(--paper);
+    transition: width 0.25s ease;
+  }
+
+  .phone-split-legend {
+    display: flex;
+    gap: 16px;
+    padding: 6px 14px 10px;
+    flex-wrap: wrap;
+    background: var(--paper);
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
+
+  .phone-split-legend .leg {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 0.06em;
+  }
+
+  .phone-split-legend .leg .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .phone-routing {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-top: none;
+    padding: 12px 14px;
+    margin-bottom: 0;
+  }
+
+  .phone-routing .route-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    border-bottom: 1px dashed var(--rule-soft);
+  }
+
+  .phone-routing .route-row:last-child { border-bottom: none; }
+
+  .phone-routing .route-row .route-dest {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-dim);
+    padding: 2px 8px;
+    background: var(--paper);
+    border: 1px solid var(--rule-soft);
+  }
+
+  .phone-routing .route-row .route-val {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .phone-routing .route-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+
+  .zero-state {
+    padding: 44px 32px;
+    text-align: center;
+    border: 1px dashed var(--rule);
+    color: var(--ink-dim);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.6;
+    background: var(--paper-2);
+  }
+
+  .zero-state::before {
+    content: "↑";
+    display: block;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 24px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  /* ------- SUMMARY BAR ------- */
+  .summary-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(250,250,247,0.95);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--accent-border);
+    padding: 14px 36px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 32px;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.04);
+  }
+
+  @media (max-width: 700px) {
+    .summary-bar {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 12px 18px;
+    }
+    .summary-bar .reset-btn { grid-column: span 2; }
+  }
+
+  .sum-cell .lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 2px;
+  }
+
+  .sum-cell .val {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+
+  .sum-cell .val .cur {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-right: 2px;
+    font-weight: 400;
+  }
+
+  .sum-cell.pain .val { color: var(--red); }
+  .sum-cell.save .val { color: var(--green); }
+  .sum-cell.fee .val { color: var(--accent); }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink-dim);
+    padding: 10px 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .reset-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ------- FEE CONFIG ------- */
+  .fee-config {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 700px) { .fee-config { grid-template-columns: 1fr; } }
+
+  /* ------- TWO COL ------- */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  body { padding-bottom: 100px; }
+
+  /* ========== BRIEF (Tab 07) ========== */
+  .brief-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .mode-toggle {
+    display: inline-flex;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 3px;
+  }
+
+  .mode-toggle button {
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mode-toggle button.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .print-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .print-btn:hover {
+    background: var(--ink);
+  }
+
+  .brief.operator .only-prospect { display: none; }
+  .brief.prospect .only-operator { display: none; }
+
+  /* Brief hero */
+  .brief-hero {
+    text-align: center;
+    padding: 40px 20px 36px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 32px;
+  }
+
+  .brief-hero .kicker {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 14px;
+  }
+
+  .brief-hero .business-name {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--ink);
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+
+  .brief-hero .tagline {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  .brief-hero .brief-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 14px;
+  }
+
+  .brief-big {
+    text-align: center;
+    padding: 44px 20px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    margin-bottom: 32px;
+  }
+
+  .brief-big .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .brief-big .value {
+    font-family: var(--serif);
+    font-size: clamp(56px, 10vw, 96px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .brief-big .value .cur {
+    font-family: var(--mono);
+    font-size: 0.45em;
+    font-style: normal;
+    vertical-align: top;
+    color: var(--accent-soft);
+    margin-right: 4px;
+    font-weight: 400;
+  }
+
+  .brief-big .sub {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    font-style: italic;
+  }
+
+  /* Brief pillar bars */
+  .brief-pillars {
+    margin-bottom: 32px;
+  }
+
+  .brief-pillars h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 10px;
+  }
+
+  .brief-pillar-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 140px;
+    gap: 20px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  @media (max-width: 700px) {
+    .brief-pillar-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+
+  .brief-pillar-row:last-child { border-bottom: none; }
+
+  .brief-pillar-name {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--ink);
+  }
+
+  .brief-pillar-name .sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .brief-bar {
+    background: var(--paper-2);
+    height: 28px;
+    border: 1px solid var(--rule-soft);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brief-bar-fill {
+    background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+
+  .brief-bar-label {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    z-index: 2;
+    font-weight: 500;
+  }
+
+  .brief-pillar-amount {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: right;
+  }
+
+  .brief-pillar-amount .cur {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-right: 2px;
+    font-weight: 400;
+  }
+
+  /* Investment block */
+  .brief-investment {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 700px) {
+    .brief-investment { grid-template-columns: 1fr; }
+  }
+
+  .brief-inv-cell {
+    background: var(--paper);
+    padding: 26px 24px;
+    text-align: center;
+  }
+
+  .brief-inv-cell.primary { background: var(--accent-bg); }
+
+  .brief-inv-cell .lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+  }
+
+  .brief-inv-cell .val {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .brief-inv-cell.primary .val { color: var(--accent); }
+
+  .brief-inv-cell .val .cur {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--ink-dim);
+    margin-right: 2px;
+    font-weight: 400;
+  }
+
+  .brief-inv-cell.primary .val .cur { color: var(--accent-soft); }
+
+  .brief-inv-cell .sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-top: 8px;
+  }
+
+  /* Operator-only status strip */
+  .op-status-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .op-status {
+    padding: 12px 14px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .op-status.good {
+    border-left: 3px solid var(--green);
+    background: var(--green-bg);
+    color: #1d5233;
+  }
+
+  .op-status.warn {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-bg);
+    color: #7a2d07;
+  }
+
+  .op-status.bad {
+    border-left: 3px solid var(--red);
+    background: var(--red-bg);
+    color: #6b1d1d;
+  }
+
+  .op-status .op-lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    opacity: 0.8;
+  }
+
+  /* Brief footer */
+  .brief-footer {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-style: italic;
+    flex-wrap: wrap;
+  }
+
+  .brief-footer .brand-foot {
+    font-family: var(--serif);
+    font-style: normal;
+    color: var(--ink);
+  }
+
+  .brief-footer .brand-foot strong {
+    color: var(--accent);
+  }
+
+  /* Closing language */
+  .brief-close {
+    background: var(--paper-2);
+    border-left: 3px solid var(--accent);
+    padding: 22px 28px;
+    margin: 28px 0;
+  }
+
+  .brief-close-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .brief-close-text {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+
+  .brief-close-text .num {
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--accent);
+    padding: 0 2px;
+  }
+
+  /* ========== PRINT STYLES ========== */
+  @media print {
+    @page {
+      size: letter;
+      margin: 0.5in;
+    }
+
+    body {
+      background: #fff !important;
+      padding: 0 !important;
+    }
+
+    body::before { display: none !important; }
+
+    .console { padding: 0 !important; max-width: 100% !important; }
+
+    header, .tabs, .summary-bar,
+    .brief-controls, .panel:not([data-panel="brief"]) {
+      display: none !important;
+    }
+
+    .grid {
+      display: block !important;
+    }
+
+    .panel { display: block !important; page-break-inside: avoid; }
+
+    .brief.operator .brief-big,
+    .brief.operator .brief-pillars,
+    .brief.operator .brief-investment,
+    .brief.operator .brief-hero {
+      display: block;
+    }
+
+    /* Force prospect-mode rendering on print */
+    .brief .only-operator { display: none !important; }
+    .brief .only-prospect { display: block !important; }
+
+    .brief-hero {
+      border: none;
+      padding: 0 0 24px;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 24px;
+    }
+
+    .brief-big {
+      border: 1px solid var(--ink);
+      page-break-inside: avoid;
+    }
+
+    .brief-pillars { page-break-inside: avoid; }
+
+    .brief-bar { border: 1px solid var(--ink); }
+
+    .brief-footer { margin-top: 32px; }
+
+    .panel-head { margin-bottom: 20px; padding-bottom: 12px; }
+
+    a { color: var(--ink) !important; text-decoration: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="console">
+
+  <header>
+    <div class="brand">
+      <div class="brand-tag">
+        <span class="dot"></span>
+        <span>Knowlogix · AI Opportunity Assessment</span>
+      </div>
+      <h1>Find the <em>leak</em>.<br/>Measure the <em>opportunity</em>.</h1>
+    </div>
+    <div class="header-meta">
+      <div class="business-field">
+        <label for="biz_name">Business being assessed</label>
+        <input type="text" id="biz_name" placeholder="Enter business name..." />
+      </div>
+      <div class="meta-date" id="assessment_date"></div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="calls">
+      <span class="tab-num">01</span>
+      <span class="tab-body">
+        <span class="tab-title">Inquiry Capture</span>
+      </span>
+    </button>
+    <button class="tab" data-tab="speed">
+      <span class="tab-num">02</span>
+      <span class="tab-body">
+        <span class="tab-title">Response Speed</span>
+      </span>
+    </button>
+    <button class="tab" data-tab="time">
+      <span class="tab-num">03</span>
+      <span class="tab-body">
+        <span class="tab-title">Manual Workload</span>
+      </span>
+    </button>
+    <button class="tab" data-tab="swivel">
+      <span class="tab-num">04</span>
+      <span class="tab-body">
+        <span class="tab-title">System Friction</span>
+      </span>
+    </button>
+    <button class="tab" data-tab="followup">
+      <span class="tab-num">05</span>
+      <span class="tab-body">
+        <span class="tab-title">Follow-up Gap</span>
+      </span>
+    </button>
+    <button class="tab" data-tab="fee">
+      <span class="tab-num">06</span>
+      <span class="tab-body">
+        <span class="tab-title">Investment &amp; Return</span>
+      </span>
+    </button>
+    <button class="tab" data-tab="brief">
+      <span class="tab-num">07</span>
+      <span class="tab-body">
+        <span class="tab-title">The Brief</span>
+      </span>
+    </button>
+  </nav>
+
+  <div class="grid">
+    <main>
+
+      <!-- ========== 01 INQUIRY CAPTURE ========== -->
+      <section class="panel active" data-panel="calls">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 01 — Inquiry Capture</div>
+          <h2 class="panel-title">How many <em>potential customers</em> try to reach your business — and how many actually connect?</h2>
+          <p class="panel-sub">Every inquiry that goes unanswered is a potential customer who will likely call a competitor next. This area looks at each channel where customers try to reach you, and measures the gap between inquiries that come in and inquiries that actually get a real response.</p>
+        </div>
+
+        <div class="context">
+          <div class="context-label">What we're measuring</div>
+          <h3>The inquiry-capture rate across your channels</h3>
+          <p>For each channel you use — phone, web forms, social DMs, etc. — we estimate four things: how much volume comes in, what percentage goes unanswered or delayed past the point of usefulness, what percentage of those inquiries would have become customers, and what a customer is worth to you.</p>
+          <p>The calculation is simple: <em>volume × miss rate × conversion rate × customer value = annual opportunity cost</em>.</p>
+          <div class="benchmark">Industry benchmark: <strong>20–45% of inbound inquiries</strong> go unanswered in small businesses, depending on channel.</div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 10px; display:flex; align-items:center; gap:8px;">
+            <span style="color: var(--accent);">→</span> Turn on each channel that applies to your business
+          </div>
+        </div>
+
+        <div class="channel-grid" id="channelGrid">
+          <button class="chan-toggle on" data-chan="phone">
+            <span class="chan-icon">01 · TEL</span>
+            <span class="chan-name">Phone</span>
+          </button>
+          <button class="chan-toggle" data-chan="form">
+            <span class="chan-icon">02 · WEB</span>
+            <span class="chan-name">Web Forms</span>
+          </button>
+          <button class="chan-toggle" data-chan="sms">
+            <span class="chan-icon">03 · SMS</span>
+            <span class="chan-name">SMS / Text</span>
+          </button>
+          <button class="chan-toggle" data-chan="email">
+            <span class="chan-icon">04 · MAIL</span>
+            <span class="chan-name">Email</span>
+          </button>
+          <button class="chan-toggle" data-chan="dm">
+            <span class="chan-icon">05 · DM</span>
+            <span class="chan-name">Social DMs</span>
+          </button>
+          <button class="chan-toggle" data-chan="chat">
+            <span class="chan-icon">06 · CHAT</span>
+            <span class="chan-name">Live Chat</span>
+          </button>
+          <button class="chan-toggle" data-chan="book">
+            <span class="chan-icon">07 · BOOK</span>
+            <span class="chan-name">Booking Link</span>
+          </button>
+        </div>
+
+        <div id="zeroState" class="zero-state hidden">
+          Turn on at least one channel above to begin the assessment.<br/>
+          Activate each channel your business currently uses to receive customer inquiries.
+        </div>
+
+        <!-- PHONE -->
+        <div class="chan-module" data-mod="phone">
+          <div class="chan-head">
+            <div class="chan-label" data-num="01">Phone</div>
+            <div class="chan-measuring">Inbound call volume: how many are sales-related, and what happens to each one?</div>
+          </div>
+
+          <!-- Row 1: Volume + Industry + Sales % -->
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Total calls / week
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">All inbound calls — sales, support, vendors, spam, everything. Your phone system or carrier can give you this number. We'll filter to sales-only below.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_vol" value="50" min="0"/></div>
+              <span class="hint">all inbound, not just sales</span>
+            </div>
+            <div class="field">
+              <label>Industry
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Select the closest industry match. This pre-fills the "% sales-related" estimate and call-split defaults based on real data. You can adjust every number after selection.</span></span>
+              </label>
+              <select id="ch_phone_industry">
+                <option value="custom">Custom / Other</option>
+                <option value="home_services" selected>Home Services (HVAC, plumbing, electrical)</option>
+                <option value="professional">Professional Services (legal, accounting, consulting)</option>
+                <option value="medical">Medical / Dental</option>
+                <option value="retail">Retail / E-commerce</option>
+                <option value="restaurant">Restaurant / Hospitality</option>
+                <option value="auto">Automotive (repair, dealership)</option>
+                <option value="realestate">Real Estate</option>
+                <option value="construction">Construction / Contractors</option>
+                <option value="fitness">Fitness / Wellness</option>
+              </select>
+              <span class="hint">pre-fills defaults below</span>
+            </div>
+            <div class="field">
+              <label>% Sales-related
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Of all calls, what percentage are from someone inquiring about your services for the first time or following up on a potential purchase? Exclude existing customer support calls, vendor calls, and spam.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_sales_pct" value="45" min="0" max="100"/></div>
+              <span class="hint">new business inquiries only</span>
+            </div>
+          </div>
+
+          <!-- Split: Answered / Missed / Delayed -->
+          <div class="phone-split-label">
+            Of sales calls, what happens to each one?
+            <span class="tip-icon" tabindex="0">?<span class="tooltip">Split your sales calls into three outcomes. "Answered" means a live person picked up. "Missed" means no one answered and no message was left — the caller is gone. "Delayed" means a voicemail was left, an after-hours system captured the number, or someone said "we'll call you back." These three numbers should add up to 100%.</span></span>
+          </div>
+          <div class="phone-split-bar" id="phoneSplitBar">
+            <div class="seg-answered" style="width:55%"></div>
+            <div class="seg-missed" style="width:25%"></div>
+            <div class="seg-delayed" style="width:20%"></div>
+          </div>
+          <div class="phone-split-legend">
+            <div class="leg"><span class="swatch" style="background:var(--green);"></span> Answered</div>
+            <div class="leg"><span class="swatch" style="background:var(--red);"></span> Missed (gone)</div>
+            <div class="leg"><span class="swatch" style="background:var(--accent);"></span> Delayed (VM / callback)</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>% Answered live
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Sales calls that connected with a live person who could actually help the caller. This is your capture rate.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_answered" value="55" min="0" max="100"/></div>
+              <span class="hint">connected with a human</span>
+            </div>
+            <div class="field">
+              <label>% Missed (gone)
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Sales calls where no one picked up, no voicemail was left, and the caller is unlikely to call back. These leads are lost. About 75–80% of callers who hit voicemail don't leave a message — they call the next business.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_miss" value="25" min="0" max="100"/></div>
+              <span class="hint">no answer, no message, gone</span>
+            </div>
+            <div class="field">
+              <label>% Delayed (VM / callback)
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Sales calls where a voicemail was left, an after-hours system captured the caller's number, or someone took a message with a promise to call back. The lead isn't lost — but how fast you respond determines if they're still warm.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_delayed" value="20" min="0" max="100"/></div>
+              <span class="hint">voicemail, after-hours, "we'll call back"</span>
+            </div>
+          </div>
+
+          <!-- Remaining inputs -->
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Avg callback time
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">For delayed calls (voicemails, callbacks), how many hours on average before someone returns the call? Under 1 hour is good. Over 4 hours is where most leads go cold. Be honest.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_callback_hrs" value="4" min="0" step="0.5"/></div>
+              <span class="hint">hours to return VM / callback</span>
+            </div>
+            <div class="field">
+              <label>Close % (answered calls)
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Of the sales calls that get answered live, what percentage become paying customers? This is your inbound phone close rate.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_phone_conv" value="25" min="0" max="100"/></div>
+              <span class="hint">your inbound close rate</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">The average revenue a new customer brings in. For recurring customers, use annual value. For one-time services, use the typical job amount.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_phone_val" value="2500" min="0"/></div>
+              <span class="hint">annual or single-job</span>
+            </div>
+          </div>
+
+          <!-- Routing display -->
+          <div class="phone-routing" id="phoneRouting">
+            <div class="route-label">Where each bucket feeds into the assessment</div>
+            <div class="route-row">
+              <span>Missed sales calls: <span class="route-val" id="pr_missed_ct">0</span>/mo</span>
+              <span class="route-dest">→ Area 01: Inquiry Capture</span>
+            </div>
+            <div class="route-row">
+              <span>Delayed sales calls: <span class="route-val" id="pr_delayed_ct">0</span>/mo</span>
+              <span class="route-dest">→ Area 02: Response Speed</span>
+            </div>
+            <div class="route-row">
+              <span>Answered, not closed: <span class="route-val" id="pr_unclosed_ct">0</span>/mo</span>
+              <span class="route-dest">→ Area 05: Follow-up Gap</span>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity (missed only)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_phone_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_phone_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (60%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_phone_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_phone_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_phone_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_phone_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="chan-module hidden" data-mod="form">
+          <div class="chan-head">
+            <div class="chan-label" data-num="02">Web Forms</div>
+            <div class="chan-measuring">How quickly and consistently do web form submissions get a real response?</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Forms / month
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Contact forms, quote requests, demo bookings, and any other web-based inquiry form. Check your CRM or the email address where form submissions land.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_form_vol" value="30" min="0"/></div>
+              <span class="hint">all inquiry forms combined</span>
+            </div>
+            <div class="field">
+              <label>% Not Replied
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Share of form submissions that either never get a reply or get a reply so late the lead has gone cold. "Cold" usually means more than 24 hours.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_form_miss" value="35" min="0" max="100"/></div>
+              <span class="hint">or replied too late</span>
+            </div>
+            <div class="field">
+              <label>Close %
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">When a form lead is replied to promptly, how often do they become a customer? This is typically lower than phone close rates because web leads are colder.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_form_conv" value="15" min="0" max="100"/></div>
+              <span class="hint">when replied to promptly</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Same as phone — average revenue per new customer. If web leads are typically different size than phone leads, adjust.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_form_val" value="2500" min="0"/></div>
+              <span class="hint">avg deal size</span>
+            </div>
+          </div>
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_form_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_form_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (70%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_form_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_form_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_form_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_form_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SMS -->
+        <div class="chan-module hidden" data-mod="sms">
+          <div class="chan-head">
+            <div class="chan-label" data-num="03">SMS / Text</div>
+            <div class="chan-measuring">Text messages to your business — do they get a prompt response?</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Texts / month
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Inbound customer texts to your business line. Check your SMS inbox or texting platform.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_sms_vol" value="40" min="0"/></div>
+              <span class="hint">inbound customer texts</span>
+            </div>
+            <div class="field">
+              <label>% Missed / Slow
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Texts that either don't get a response or take longer than 2 hours. After 2 hours, SMS intent drops off sharply.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_sms_miss" value="30" min="0" max="100"/></div>
+              <span class="hint">no reply or &gt;2hr</span>
+            </div>
+            <div class="field">
+              <label>Close %
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">SMS inquiries are typically warm — they're often follow-ups or from people who already know you. Close rates tend to run higher than web forms.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_sms_conv" value="30" min="0" max="100"/></div>
+              <span class="hint">SMS leads tend to be warm</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Average revenue per new customer coming in via text.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_sms_val" value="2500" min="0"/></div>
+              <span class="hint">avg deal size</span>
+            </div>
+          </div>
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_sms_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_sms_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (75%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_sms_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_sms_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_sms_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_sms_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="chan-module hidden" data-mod="email">
+          <div class="chan-head">
+            <div class="chan-label" data-num="04">Email</div>
+            <div class="chan-measuring">Sales inquiries arriving by email — how many fall through the cracks?</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Emails / month
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Inbound sales inquiries by email — not internal email, not newsletters. Count emails from prospective customers only.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_email_vol" value="50" min="0"/></div>
+              <span class="hint">inbound sales inquiries</span>
+            </div>
+            <div class="field">
+              <label>% Dropped
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Emails that get buried, forwarded and forgotten, or simply never answered. In busy inboxes this is often higher than people realize.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_email_miss" value="25" min="0" max="100"/></div>
+              <span class="hint">buried or never answered</span>
+            </div>
+            <div class="field">
+              <label>Close %
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Of the email leads that do get a proper response, how many become customers?</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_email_conv" value="12" min="0" max="100"/></div>
+              <span class="hint">when responded to</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Average revenue per new customer acquired via email.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_email_val" value="2500" min="0"/></div>
+              <span class="hint">avg deal size</span>
+            </div>
+          </div>
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_email_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_email_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (65%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_email_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_email_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_email_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_email_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DM -->
+        <div class="chan-module hidden" data-mod="dm">
+          <div class="chan-head">
+            <div class="chan-label" data-num="05">Social DMs</div>
+            <div class="chan-measuring">Inquiries arriving via Instagram, Facebook, and LinkedIn direct messages.</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>DMs / month
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Instagram + Facebook + LinkedIn DMs combined. Check each platform's message center.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_dm_vol" value="25" min="0"/></div>
+              <span class="hint">IG + FB + LI combined</span>
+            </div>
+            <div class="field">
+              <label>% Missed
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Most small businesses don't actively monitor social DMs. The unmissed rate here is typically very high — 40–60% is common.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_dm_miss" value="45" min="0" max="100"/></div>
+              <span class="hint">typically very high</span>
+            </div>
+            <div class="field">
+              <label>Close %
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Social DMs are often a colder channel — lower intent than phone or text. Close rates tend to be in single digits to low teens.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_dm_conv" value="10" min="0" max="100"/></div>
+              <span class="hint">colder channel</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Average revenue per new customer from social DMs.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_dm_val" value="2500" min="0"/></div>
+              <span class="hint">avg deal size</span>
+            </div>
+          </div>
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_dm_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_dm_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (55%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_dm_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_dm_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_dm_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_dm_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHAT -->
+        <div class="chan-module hidden" data-mod="chat">
+          <div class="chan-head">
+            <div class="chan-label" data-num="06">Live Chat</div>
+            <div class="chan-measuring">Website chat widget activity — monitored during business hours vs. after?</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Chats / month
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">How many times per month does someone initiate a conversation through your website chat widget? Check your chat platform's analytics.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_chat_vol" value="35" min="0"/></div>
+              <span class="hint">widget conversations started</span>
+            </div>
+            <div class="field">
+              <label>% Unanswered
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Chats where no one was available to respond — primarily after-hours, lunch, and when staff is busy. This is often 50%+ for small businesses.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_chat_miss" value="50" min="0" max="100"/></div>
+              <span class="hint">after-hours + missed</span>
+            </div>
+            <div class="field">
+              <label>Close %
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Live chat users are high-intent — they initiated contact while actively browsing. Close rates are typically strong when handled well.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_chat_conv" value="20" min="0" max="100"/></div>
+              <span class="hint">high-intent channel</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Average revenue per new customer from chat.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_chat_val" value="2500" min="0"/></div>
+              <span class="hint">avg deal size</span>
+            </div>
+          </div>
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_chat_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_chat_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (80%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_chat_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_chat_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_chat_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_chat_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOOK -->
+        <div class="chan-module hidden" data-mod="book">
+          <div class="chan-head">
+            <div class="chan-label" data-num="07">Booking Link</div>
+            <div class="chan-measuring">Your self-serve booking page — completion vs. abandonment.</div>
+          </div>
+          <div class="chan-inputs">
+            <div class="field">
+              <label>Visits / month
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Total visits to your booking page. Calendly, Acuity, GoHighLevel, and most booking tools report this in their dashboard.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_book_vol" value="60" min="0"/></div>
+              <span class="hint">booking page visits</span>
+            </div>
+            <div class="field">
+              <label>% Abandoned
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">People who land on the booking page but never complete the booking. Friction in the process is usually the cause.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_book_miss" value="55" min="0" max="100"/></div>
+              <span class="hint">start but don't complete</span>
+            </div>
+            <div class="field">
+              <label>Close %
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Booking-page visitors are highly self-selected — they're ready to take action. Close rates among completed bookings tend to be strong.</span></span>
+              </label>
+              <div class="input-row"><input type="number" id="ch_book_conv" value="35" min="0" max="100"/></div>
+              <span class="hint">high-intent visitors</span>
+            </div>
+            <div class="field">
+              <label>Customer Value
+                <span class="tip-icon" tabindex="0">?<span class="tooltip">Average revenue per booked customer.</span></span>
+              </label>
+              <div class="input-row"><span class="prefix">$</span><input type="number" id="ch_book_val" value="2500" min="0"/></div>
+              <span class="hint">avg deal size</span>
+            </div>
+          </div>
+          <div class="chan-totals">
+            <div class="chan-total primary">
+              <div class="lbl">Annual Opportunity<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_book_pain"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_book_pain">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Recoverable (70%)<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_book_recover"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_book_recover">0</span></div>
+            </div>
+            <div class="chan-total">
+              <div class="lbl">Per Month<span class="math-tip" tabindex="0">?</span><div class="math-pop" id="mp_book_monthly"></div></div>
+              <div class="val"><span class="cur">$</span><span id="ch_book_monthly">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="math" style="margin-top: 24px;">
+          <div class="math-label">Area 01 Total — sum of active channels</div>
+          <div class="math-chain" id="pillar_channel_chain">
+            Activate a channel above to see the math.
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="result-cell primary">
+            <div class="label">Annual Opportunity — All Channels</div>
+            <div class="value"><span class="cur">$</span><span id="r_calls_pain">0</span></div>
+            <div class="sub">revenue currently being missed through unanswered inquiries</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Conservative Recovery</div>
+            <div class="value"><span class="cur">$</span><span id="r_calls_recover">0</span></div>
+            <div class="sub">weighted by realistic capture rate per channel</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Per Month</div>
+            <div class="value"><span class="cur">$</span><span id="r_calls_monthly">0</span></div>
+            <div class="sub">monthly revenue back in play</div>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-label">The finding</div>
+          <div class="finding-text">
+            Based on the channels selected, this business is missing approximately
+            <span class="num">$<span id="say_calls_pain">0</span></span> in annual revenue from unanswered or delayed inquiries. A unified AI response system across these channels can realistically recover
+            <span class="num">$<span id="say_calls_monthly">0</span></span> per month.
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 02 RESPONSE SPEED ========== -->
+      <section class="panel" data-panel="speed">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 02 — Response Speed</div>
+          <h2 class="panel-title">When a lead reaches out, <em>how fast</em> do they hear back?</h2>
+          <p class="panel-sub">Speed of first response is one of the most underrated variables in sales. Leads don't wait — they fill out two or three forms, then go with whoever calls first.</p>
+        </div>
+
+        <div class="context">
+          <div class="context-label">What we're measuring</div>
+          <h3>The conversion lift from faster first contact</h3>
+          <p>The difference between your current close rate and the close rate you'd hit if every lead got an instant first response. The gap between those two numbers, multiplied by your lead volume and customer value, is the opportunity.</p>
+          <div class="benchmark">Research benchmark: A lead contacted within <strong>5 minutes</strong> is up to <strong>21× more likely</strong> to convert than one contacted after 30 minutes. (Harvard Business Review / Lead Response Management Study.)</div>
+        </div>
+
+        <div class="autopull-field">
+          <div class="ap-head">
+            <div class="ap-label">
+              Leads / month — non-phone channels
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Total monthly leads from channels where response time drives conversion: forms, SMS, email, social DMs, live chat, and booking abandons. Phone is excluded — phone miss-rate is already handled in Area 01.</span></span>
+            </div>
+            <div class="ap-toggle" id="speed_toggle">
+              <button type="button" data-mode="auto" class="active">Auto</button>
+              <button type="button" data-mode="manual">Manual</button>
+            </div>
+          </div>
+          <div class="ap-value">
+            <input type="number" id="speed_leads" value="0" min="0" readonly />
+            <span class="ap-unit">leads / month</span>
+          </div>
+          <div class="ap-breakdown empty" id="speed_breakdown">
+            Turn on non-phone channels in Area 01 — their volumes will be pulled here automatically.
+          </div>
+        </div>
+
+        <div class="inputs">
+          <div class="field">
+            <label>Current close %
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Your actual close rate on these leads today, given your current response time.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="speed_close" value="10" min="0" max="100" /></div>
+            <span class="hint">at current response time</span>
+          </div>
+          <div class="field">
+            <label>Instant-reply close %
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">What your close rate would realistically be if every lead got a response within 60 seconds. A 2–3× lift over current is typical and well-documented.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="speed_fast" value="22" min="0" max="100" /></div>
+            <span class="hint">with sub-minute response</span>
+          </div>
+          <div class="field">
+            <label>Customer Value
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Same as Area 01 — average revenue per new customer.</span></span>
+            </label>
+            <div class="input-row"><span class="prefix">$</span><input type="number" id="speed_value" value="2500" min="0" /></div>
+            <span class="hint">avg deal size</span>
+          </div>
+        </div>
+
+        <div class="math">
+          <div class="math-label">How this calculates</div>
+          <div class="math-chain">
+            <span class="v" id="m_speed_leads">40</span> leads/mo
+            <span class="op">×</span> 12 months
+            <span class="op">×</span> (<span class="v" id="m_speed_lift">12%</span> conversion lift)
+            <span class="op">×</span> <span class="v" id="m_speed_value">$2,500</span>
+            <span class="op">=</span> <span class="v" id="m_speed_total" style="color:var(--accent);font-weight:600;">$144,000</span>/yr
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="result-cell primary">
+            <div class="label">Annual Opportunity</div>
+            <div class="value"><span class="cur">$</span><span id="r_speed_pain">144,000</span></div>
+            <div class="sub">lost to slow first response</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Additional Customers / Year</div>
+            <div class="value" style="font-family:var(--mono);font-size:32px;"><span id="r_speed_customers">57.6</span></div>
+            <div class="sub">from the same lead volume, closed instead of lost</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Per Month</div>
+            <div class="value"><span class="cur">$</span><span id="r_speed_monthly">12,000</span></div>
+            <div class="sub">additional monthly revenue potential</div>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-label">The finding</div>
+          <div class="finding-text">
+            Automating first contact to happen within 60 seconds of every inquiry — via text, email, or a scheduling link — could produce an additional <span class="num">$<span id="say_speed_monthly">12,000</span></span> per month at current lead volumes.
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 03 MANUAL WORKLOAD ========== -->
+      <section class="panel" data-panel="time">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 03 — Manual Workload</div>
+          <h2 class="panel-title">How many hours each week are spent on <em>repetitive work</em> that automation could handle?</h2>
+          <p class="panel-sub">Repetitive, rule-based work is the clearest automation target. Not creative work, not judgment calls — just the tasks that look the same on Monday as they did last Friday.</p>
+        </div>
+
+        <div class="context">
+          <div class="context-label">What we're measuring</div>
+          <h3>Labor cost tied up in automatable work</h3>
+          <p>Hours per week spent on repetitive work, multiplied by the loaded hourly cost of whoever does it, multiplied by what percentage could reasonably be automated.</p>
+          <div class="benchmark">Common examples: pulling the same report weekly, copying data between systems, sending similar emails, generating invoices from completed work, updating multiple calendars. If someone does it the same way every time, it's a candidate. <strong>60–80% automatable</strong> is a realistic range for most of these tasks.</div>
+        </div>
+
+        <div class="inputs">
+          <div class="field">
+            <label>Hours / week (team total)
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Across the whole team, how many hours per week go into repetitive, rule-based work. Add them up task by task — the number is usually higher than people realize.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="time_hours" value="15" min="0" /></div>
+            <span class="hint">repetitive, automatable tasks</span>
+          </div>
+          <div class="field">
+            <label>Loaded hourly cost
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">True cost per hour of whoever does the work: salary divided by 2080 (annual work hours), multiplied by ~1.3 to account for taxes, benefits, and overhead. $20/hr salary = ~$26/hr loaded.</span></span>
+            </label>
+            <div class="input-row"><span class="prefix">$</span><input type="number" id="time_rate" value="35" min="0" /></div>
+            <span class="hint">salary ÷ 2080 × 1.3</span>
+          </div>
+          <div class="field">
+            <label>% automatable
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Of the repetitive hours you just listed, what share could realistically be handled by software with good design? Be conservative — 60–80% is typical for rule-based work.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="time_auto" value="70" min="0" max="100" /></div>
+            <span class="hint">realistic, conservative</span>
+          </div>
+        </div>
+
+        <div class="math">
+          <div class="math-label">How this calculates</div>
+          <div class="math-chain">
+            <span class="v" id="m_time_hours">15</span> hrs/wk
+            <span class="op">×</span> 52 wks
+            <span class="op">×</span> <span class="v" id="m_time_rate">$35</span>
+            <span class="op">×</span> <span class="v" id="m_time_auto">70%</span>
+            <span class="op">=</span> <span class="v" id="m_time_total" style="color:var(--accent);font-weight:600;">$19,110</span>/yr
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="result-cell primary">
+            <div class="label">Annual Opportunity</div>
+            <div class="value"><span class="cur">$</span><span id="r_time_pain">19,110</span></div>
+            <div class="sub">labor cost spent on automatable work</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Hours Freed / Year</div>
+            <div class="value" style="font-family:var(--mono);font-size:32px;"><span id="r_time_hours">546</span></div>
+            <div class="sub">≈ <span id="r_time_weeks">13.7</span> work weeks returned to the team</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Per Month</div>
+            <div class="value"><span class="cur">$</span><span id="r_time_monthly">1,593</span></div>
+            <div class="sub">labor cost that can be redirected</div>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-label">The finding</div>
+          <div class="finding-text">
+            Automating the repetitive work currently consuming <span class="num"><span id="say_time_hours">15</span></span> hours per week would free up <span class="num"><span id="say_time_weeks">13.7</span></span> full work weeks annually — labor that could be redirected toward growth, customer experience, or simply operating with less strain.
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 04 SYSTEM FRICTION ========== -->
+      <section class="panel" data-panel="swivel">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 04 — System Friction</div>
+          <h2 class="panel-title">How much time is lost moving <em>the same information</em> between systems that should talk to each other?</h2>
+          <p class="panel-sub">When a new customer is entered into the CRM, then retyped into the invoicing tool, then added to the email marketing platform, then scheduled in the calendar — that's four hops for one customer. This cost rarely shows up on a P&amp;L, but it's real.</p>
+        </div>
+
+        <div class="context">
+          <div class="context-label">What we're measuring</div>
+          <h3>Labor lost to between-system handoffs</h3>
+          <p>Count the people doing data-movement work, the number of copy-paste or retype events per person per day, and the average time per event (including error correction). Multiply by a 250-day work year and the loaded hourly cost.</p>
+          <div class="benchmark">Typical small business uses <strong>7–12 tools</strong> daily. Teams of 4–6 typically lose <strong>200–500 hours per year</strong> to this friction without realizing it.</div>
+        </div>
+
+        <div class="inputs">
+          <div class="field">
+            <label>Employees affected
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">People on your team who regularly do data-movement work between software tools.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="swivel_emps" value="4" min="0" /></div>
+            <span class="hint">doing data handoffs</span>
+          </div>
+          <div class="field">
+            <label>Hops / person / day
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">How many times per day does each person copy or retype information from one system into another? A new customer might need 3–5 hops by itself.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="swivel_hops" value="8" min="0" /></div>
+            <span class="hint">copy-paste events daily</span>
+          </div>
+          <div class="field">
+            <label>Minutes per hop
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Average time each handoff takes, including time spent correcting errors from mistyped data. 2–5 minutes is typical.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="swivel_mins" value="3" min="0" /></div>
+            <span class="hint">including error correction</span>
+          </div>
+          <div class="field">
+            <label>Loaded hourly cost
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Average loaded hourly cost across the team doing this work.</span></span>
+            </label>
+            <div class="input-row"><span class="prefix">$</span><input type="number" id="swivel_rate" value="32" min="0" /></div>
+            <span class="hint">avg across team</span>
+          </div>
+        </div>
+
+        <div class="math">
+          <div class="math-label">How this calculates</div>
+          <div class="math-chain">
+            <span class="v" id="m_swivel_emps">4</span> people
+            <span class="op">×</span> <span class="v" id="m_swivel_hops">8</span> hops
+            <span class="op">×</span> <span class="v" id="m_swivel_mins">3</span> min
+            <span class="op">×</span> 250 days
+            <span class="op">÷</span> 60
+            <span class="op">×</span> <span class="v" id="m_swivel_rate">$32</span>
+            <span class="op">=</span> <span class="v" id="m_swivel_total" style="color:var(--accent);font-weight:600;">$12,800</span>/yr
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="result-cell primary">
+            <div class="label">Annual Opportunity</div>
+            <div class="value"><span class="cur">$</span><span id="r_swivel_pain">12,800</span></div>
+            <div class="sub">in between-system labor</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Hours Lost / Year</div>
+            <div class="value" style="font-family:var(--mono);font-size:32px;"><span id="r_swivel_hours">400</span></div>
+            <div class="sub">across the whole team</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Per Month</div>
+            <div class="value"><span class="cur">$</span><span id="r_swivel_monthly">1,067</span></div>
+            <div class="sub">monthly cost of system friction</div>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-label">The finding</div>
+          <div class="finding-text">
+            Information moving between systems is consuming roughly <span class="num">$<span id="say_swivel_pain">12,800</span></span> per year — <span class="num"><span id="say_swivel_hours">400</span></span> hours of real human time. Connecting these systems so they share data automatically removes most of that cost.
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 05 FOLLOW-UP ========== -->
+      <section class="panel" data-panel="followup">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 05 — Follow-up Gap</div>
+          <h2 class="panel-title">What happens to the leads that <em>don't close on the first contact</em>?</h2>
+          <p class="panel-sub">Most sales require multiple touches, but most businesses stop after the first one. The leads that show interest but don't buy right away are usually the highest-value ones to recover — you've already paid to get them.</p>
+        </div>
+
+        <div class="context">
+          <div class="context-label">What we're measuring</div>
+          <h3>Revenue recoverable from leads that went cold</h3>
+          <p>Of leads who don't close on the first interaction, how many get no follow-up at all? Of those abandoned leads, what portion could be recovered through consistent, automated nurture — a sequence of thoughtful touches over time, rather than a single reminder?</p>
+          <div class="benchmark">Research benchmark: <strong>80% of sales require 5+ follow-ups</strong>, but <strong>44% of salespeople give up after one</strong>. Proper nurture can recover <strong>8–15%</strong> of leads that otherwise go cold.</div>
+        </div>
+
+        <div class="autopull-field">
+          <div class="ap-head">
+            <div class="ap-label">
+              Unclosed leads / month
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Calculated from Area 01: leads that were answered/replied to, minus the ones that closed on first interaction. These are the leads still sitting in the pipeline, cold or warm.</span></span>
+            </div>
+            <div class="ap-toggle" id="fu_toggle">
+              <button type="button" data-mode="auto" class="active">Auto</button>
+              <button type="button" data-mode="manual">Manual</button>
+            </div>
+          </div>
+          <div class="ap-value">
+            <input type="number" id="fu_leads" value="0" min="0" readonly />
+            <span class="ap-unit">unclosed leads / month</span>
+          </div>
+          <div class="ap-breakdown empty" id="fu_breakdown">
+            Turn on channels in Area 01 — unclosed lead volume will be calculated automatically.
+          </div>
+        </div>
+
+        <div class="inputs">
+          <div class="field">
+            <label>% getting no follow-up
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Of unclosed leads, what share gets no additional outreach? Most businesses honestly answer 40–70% when they really think about it.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="fu_dropped" value="60" min="0" max="100" /></div>
+            <span class="hint">honest estimate</span>
+          </div>
+          <div class="field">
+            <label>Recoverable %
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">With a proper multi-touch nurture sequence running automatically, what share of dropped leads would convert? 8–15% is a well-supported range.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="fu_recover" value="10" min="0" max="100" /></div>
+            <span class="hint">with proper nurture</span>
+          </div>
+          <div class="field">
+            <label>Customer Value
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">Average revenue per new customer.</span></span>
+            </label>
+            <div class="input-row"><span class="prefix">$</span><input type="number" id="fu_value" value="2500" min="0" /></div>
+            <span class="hint">avg deal size</span>
+          </div>
+        </div>
+
+        <div class="math">
+          <div class="math-label">How this calculates</div>
+          <div class="math-chain">
+            <span class="v" id="m_fu_leads">30</span>/mo
+            <span class="op">×</span> 12
+            <span class="op">×</span> <span class="v" id="m_fu_dropped">60%</span> dropped
+            <span class="op">×</span> <span class="v" id="m_fu_recover">10%</span> recoverable
+            <span class="op">×</span> <span class="v" id="m_fu_value">$2,500</span>
+            <span class="op">=</span> <span class="v" id="m_fu_total" style="color:var(--accent);font-weight:600;">$54,000</span>/yr
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="result-cell primary">
+            <div class="label">Annual Opportunity</div>
+            <div class="value"><span class="cur">$</span><span id="r_fu_pain">54,000</span></div>
+            <div class="sub">lost through the follow-up gap</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Customers Recoverable / Year</div>
+            <div class="value" style="font-family:var(--mono);font-size:32px;"><span id="r_fu_customers">21.6</span></div>
+            <div class="sub">from existing leads, with automated nurture</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Per Month</div>
+            <div class="value"><span class="cur">$</span><span id="r_fu_monthly">4,500</span></div>
+            <div class="sub">reclaimed monthly revenue</div>
+          </div>
+        </div>
+
+        <div class="finding">
+          <div class="finding-label">The finding</div>
+          <div class="finding-text">
+            Leads that have already shown interest but haven't closed represent a recoverable pool of roughly <span class="num">$<span id="say_fu_monthly">4,500</span></span> per month. These are customers you've already paid to acquire — automated nurture simply closes the loop.
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 06 INVESTMENT & RETURN ========== -->
+      <section class="panel" data-panel="fee">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 06 — Investment & Return</div>
+          <h2 class="panel-title">What's the <em>return on investment</em> for addressing these opportunities?</h2>
+          <p class="panel-sub">Combining every area we measured into a single picture: the total annual opportunity, a conservative estimate of what's realistically recoverable, and how that compares to the investment required to build the systems.</p>
+        </div>
+
+        <div class="context">
+          <div class="context-label">What we're measuring</div>
+          <h3>Total opportunity vs. cost of capture</h3>
+          <p>The total across all five areas, adjusted downward for real-world implementation challenges (the "Conservative Adjustment"), measured against a monthly service fee and one-time setup cost.</p>
+          <div class="benchmark">A healthy ROI for this type of engagement is a recoverable figure that exceeds the annual investment by <strong>5× or more</strong>. Anything below that usually means the opportunities here aren't significant enough to justify the work — and we'd recommend against proceeding.</div>
+        </div>
+
+        <div class="fee-config">
+          <div class="field">
+            <label>Monthly service fee
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">The proposed ongoing monthly investment for managing and optimizing the AI systems, automation, and workflows identified in this assessment.</span></span>
+            </label>
+            <div class="input-row"><span class="prefix">$</span><input type="number" id="fee_amount" value="1000" min="0" /></div>
+            <span class="hint">ongoing management</span>
+          </div>
+          <div class="field">
+            <label>Implementation fee
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">One-time setup cost for building out the automations, integrations, and AI systems. Often waived or discounted when signing an annual agreement.</span></span>
+            </label>
+            <div class="input-row"><span class="prefix">$</span><input type="number" id="fee_setup" value="2500" min="0" /></div>
+            <span class="hint">one-time build cost</span>
+          </div>
+          <div class="field">
+            <label>Conservative Adjustment
+              <span class="tip-icon" tabindex="0">?<span class="tooltip">A credibility discount applied to the recovery total. Because no implementation captures 100% of theoretical opportunity, we trim the number before quoting it. 15% is standard; raise it to 25–30% for more conservative projections.</span></span>
+            </label>
+            <div class="input-row"><input type="number" id="fee_attrition" value="15" min="0" max="100" /></div>
+            <span class="hint">% discount on recovery total</span>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="math">
+            <div class="math-label">Total Annual Opportunity — All 5 Areas</div>
+            <div style="font-family:var(--serif);font-size:44px;font-weight:500;color:var(--red);line-height:1;margin-bottom:8px;">
+              <span style="font-family:var(--mono);font-size:20px;color:var(--ink-dim);">$</span><span id="fee_total_pain">0</span>
+            </div>
+            <div style="font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-dim);">
+              revenue and labor currently unrealized
+            </div>
+          </div>
+
+          <div class="math">
+            <div class="math-label">Recoverable, After Conservative Adjustment</div>
+            <div style="font-family:var(--serif);font-size:44px;font-weight:500;color:var(--green);line-height:1;margin-bottom:8px;">
+              <span style="font-family:var(--mono);font-size:20px;color:var(--ink-dim);">$</span><span id="fee_total_save">0</span>
+            </div>
+            <div style="font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-dim);">
+              after a <span id="fee_attr_display">15%</span> downward adjustment
+            </div>
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="result-cell primary">
+            <div class="label">ROI Multiple</div>
+            <div class="value" style="font-family:var(--mono);"><span id="fee_roi">0</span>×</div>
+            <div class="sub">every $1 invested returns this much</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Payback Period</div>
+            <div class="value" style="font-family:var(--mono);"><span id="fee_payback">0</span></div>
+            <div class="sub">months to break even on total investment</div>
+          </div>
+          <div class="result-cell">
+            <div class="label">Year-1 Net Benefit</div>
+            <div class="value"><span class="cur">$</span><span id="fee_net">0</span></div>
+            <div class="sub">recovered revenue minus all fees paid</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 07 THE BRIEF ========== -->
+      <section class="panel" data-panel="brief">
+        <div class="panel-head">
+          <div class="panel-kicker">Area 07 — The Brief</div>
+          <h2 class="panel-title">A summary of <em>what we found</em>, ready to share.</h2>
+          <p class="panel-sub">Every area brought together in one view. Toggle between Prospect mode (clean, shareable, ready to export) and Operator mode (with status flags to help you read the numbers). Use the print button to save a PDF for follow-up.</p>
+        </div>
+
+        <div class="brief-controls">
+          <div class="mode-toggle" id="modeToggle">
+            <button data-mode="prospect" class="active">Prospect View</button>
+            <button data-mode="operator">Operator View</button>
+          </div>
+          <button class="print-btn" onclick="window.print()">↓ Save as PDF</button>
+        </div>
+
+        <div class="brief prospect" id="brief">
+
+          <!-- Hero -->
+          <div class="brief-hero">
+            <div class="kicker">AI Opportunity Assessment</div>
+            <div class="business-name" id="brief_biz">[ Business Name ]</div>
+            <div class="tagline">A snapshot of where revenue and labor are currently being left on the table — and what a thoughtful AI and automation engagement can recover.</div>
+            <div class="brief-date" id="brief_date"></div>
+          </div>
+
+          <!-- Operator-only: status strip -->
+          <div class="op-status-strip only-operator" id="op_status_strip">
+            <!-- populated by JS -->
+          </div>
+
+          <!-- Big number -->
+          <div class="brief-big">
+            <div class="label">Total Annual Opportunity — Recoverable</div>
+            <div class="value"><span class="cur">$</span><span id="brief_total_save">0</span></div>
+            <div class="sub">after conservative adjustment, across all measured areas</div>
+          </div>
+
+          <!-- Per-pillar bars -->
+          <div class="brief-pillars">
+            <h2>Where it's coming from</h2>
+
+            <div class="brief-pillar-row">
+              <div class="brief-pillar-name">
+                Inquiry Capture
+                <span class="sub">01 — unanswered inquiries across channels</span>
+              </div>
+              <div class="brief-bar"><div class="brief-bar-fill" id="bar_calls" style="width: 0%;"></div></div>
+              <div class="brief-pillar-amount"><span class="cur">$</span><span id="brief_calls">0</span></div>
+            </div>
+
+            <div class="brief-pillar-row">
+              <div class="brief-pillar-name">
+                Response Speed
+                <span class="sub">02 — conversion lift from faster first response</span>
+              </div>
+              <div class="brief-bar"><div class="brief-bar-fill" id="bar_speed" style="width: 0%;"></div></div>
+              <div class="brief-pillar-amount"><span class="cur">$</span><span id="brief_speed">0</span></div>
+            </div>
+
+            <div class="brief-pillar-row">
+              <div class="brief-pillar-name">
+                Manual Workload
+                <span class="sub">03 — labor spent on automatable work</span>
+              </div>
+              <div class="brief-bar"><div class="brief-bar-fill" id="bar_time" style="width: 0%;"></div></div>
+              <div class="brief-pillar-amount"><span class="cur">$</span><span id="brief_time">0</span></div>
+            </div>
+
+            <div class="brief-pillar-row">
+              <div class="brief-pillar-name">
+                System Friction
+                <span class="sub">04 — between-tool data handoffs</span>
+              </div>
+              <div class="brief-bar"><div class="brief-bar-fill" id="bar_swivel" style="width: 0%;"></div></div>
+              <div class="brief-pillar-amount"><span class="cur">$</span><span id="brief_swivel">0</span></div>
+            </div>
+
+            <div class="brief-pillar-row">
+              <div class="brief-pillar-name">
+                Follow-up Gap
+                <span class="sub">05 — recoverable from cold leads</span>
+              </div>
+              <div class="brief-bar"><div class="brief-bar-fill" id="bar_fu" style="width: 0%;"></div></div>
+              <div class="brief-pillar-amount"><span class="cur">$</span><span id="brief_fu">0</span></div>
+            </div>
+          </div>
+
+          <!-- Investment block -->
+          <h2 style="font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:20px;border-bottom:1px solid var(--rule);padding-bottom:10px;">Investment & return</h2>
+
+          <div class="brief-investment">
+            <div class="brief-inv-cell primary">
+              <div class="lbl">ROI Multiple</div>
+              <div class="val" style="font-family:var(--mono);"><span id="brief_roi">0</span>×</div>
+              <div class="sub">return per dollar invested</div>
+            </div>
+            <div class="brief-inv-cell">
+              <div class="lbl">Payback Period</div>
+              <div class="val" style="font-family:var(--mono);"><span id="brief_payback">0</span></div>
+              <div class="sub">months to break even</div>
+            </div>
+            <div class="brief-inv-cell">
+              <div class="lbl">Year-1 Net Benefit</div>
+              <div class="val"><span class="cur">$</span><span id="brief_net">0</span></div>
+              <div class="sub">after all fees</div>
+            </div>
+          </div>
+
+          <div class="brief-close">
+            <div class="brief-close-label">Summary</div>
+            <div class="brief-close-text">
+              Across the five areas measured, the total annual opportunity for <span id="brief_biz_inline">this business</span> is approximately <span class="num">$<span id="brief_total_pain">0</span></span>. With a conservative implementation, <span class="num">$<span id="brief_total_save2">0</span></span> of that is realistically recoverable in year one — against an investment of <span class="num">$<span id="brief_fee_annual">0</span></span> annually. The payback period is <span class="num"><span id="brief_payback2">0</span> months</span>, and the net year-one benefit is <span class="num">$<span id="brief_net2">0</span></span>.
+            </div>
+          </div>
+
+          <div class="brief-footer">
+            <div>
+              <div class="brand-foot"><strong>Knowlogix</strong> — Business Technology Systems Integration</div>
+              <div style="margin-top:4px;">AI Audit · Automation · Integration</div>
+            </div>
+            <div style="text-align:right;">
+              <div>Prepared by Knowlogix LLC</div>
+              <div style="margin-top:4px;">Summerville, SC</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- STICKY SUMMARY BAR -->
+<div class="summary-bar">
+  <div class="sum-cell pain">
+    <div class="lbl">Total Annual Opportunity</div>
+    <div class="val"><span class="cur">$</span><span id="bar_pain">0</span></div>
+  </div>
+  <div class="sum-cell save">
+    <div class="lbl">Recoverable (Conservative)</div>
+    <div class="val"><span class="cur">$</span><span id="bar_save">0</span></div>
+  </div>
+  <div class="sum-cell fee">
+    <div class="lbl">ROI Multiple</div>
+    <div class="val"><span id="bar_ratio">0</span>×</div>
+  </div>
+  <button class="reset-btn" id="resetBtn">Reset</button>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const n = (id) => parseFloat($(id).value) || 0;
+  const fmt = (v) => {
+    if (!isFinite(v)) return "0";
+    return Math.round(v).toLocaleString("en-US");
+  };
+  const fmt1 = (v) => {
+    if (!isFinite(v)) return "0";
+    return (Math.round(v * 10) / 10).toLocaleString("en-US");
+  };
+  const setTxt = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+
+  // Date stamp
+  const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  setTxt("assessment_date", today);
+  setTxt("brief_date", today);
+
+  // Business name sync
+  $("biz_name").addEventListener("input", (e) => {
+    const v = e.target.value || "[ Business Name ]";
+    setTxt("brief_biz", v);
+    setTxt("brief_biz_inline", e.target.value || "this business");
+  });
+
+  // Tabs
+  const tabs = document.querySelectorAll(".tab");
+  const panels = document.querySelectorAll(".panel");
+  tabs.forEach(t => {
+    t.addEventListener("click", () => {
+      tabs.forEach(x => x.classList.remove("active"));
+      panels.forEach(p => p.classList.remove("active"));
+      t.classList.add("active");
+      document.querySelector(`.panel[data-panel="${t.dataset.tab}"]`).classList.add("active");
+    });
+  });
+
+  // Brief mode toggle
+  const modeBtns = document.querySelectorAll("#modeToggle button");
+  modeBtns.forEach(b => {
+    b.addEventListener("click", () => {
+      modeBtns.forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      $("brief").className = "brief " + b.dataset.mode;
+    });
+  });
+
+  // Channel picker
+  const CHANNELS = [
+    { id: "phone", recover: 0.60, annualizer: 52, label: "Phone" },
+    { id: "form",  recover: 0.70, annualizer: 12, label: "Forms" },
+    { id: "sms",   recover: 0.75, annualizer: 12, label: "SMS"   },
+    { id: "email", recover: 0.65, annualizer: 12, label: "Email" },
+    { id: "dm",    recover: 0.55, annualizer: 12, label: "DMs"   },
+    { id: "chat",  recover: 0.80, annualizer: 12, label: "Chat"  },
+    { id: "book",  recover: 0.70, annualizer: 12, label: "Book"  }
+  ];
+  const activeChannels = new Set(["phone"]);
+
+  document.querySelectorAll(".chan-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const c = btn.dataset.chan;
+      const mod = document.querySelector(`.chan-module[data-mod="${c}"]`);
+      if (activeChannels.has(c)) {
+        activeChannels.delete(c);
+        btn.classList.remove("on");
+        mod.classList.add("hidden");
+      } else {
+        activeChannels.add(c);
+        btn.classList.add("on");
+        mod.classList.remove("hidden");
+      }
+      updateZeroState();
+      calc();
+    });
+  });
+
+  function updateZeroState() {
+    const zero = $("zeroState");
+    if (activeChannels.size === 0) zero.classList.remove("hidden");
+    else zero.classList.add("hidden");
+  }
+
+  // ==== Auto-pull state ====
+  const autoPull = {
+    speed: true,  // default to auto mode
+    fu: true
+  };
+
+  // Wire up auto/manual toggles
+  function wireAutopullToggle(toggleId, key, inputId) {
+    const toggle = document.getElementById(toggleId);
+    if (!toggle) return;
+    toggle.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mode = btn.dataset.mode;
+        autoPull[key] = (mode === "auto");
+        toggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const inp = document.getElementById(inputId);
+        if (autoPull[key]) {
+          inp.setAttribute("readonly", "readonly");
+        } else {
+          inp.removeAttribute("readonly");
+          inp.focus();
+        }
+        calc();
+      });
+    });
+  }
+  wireAutopullToggle("speed_toggle", "speed", "speed_leads");
+  wireAutopullToggle("fu_toggle", "fu", "fu_leads");
+
+  // ==== Industry presets for phone ====
+  const INDUSTRY_PRESETS = {
+    custom:         { sales: 35, answered: 55, missed: 25, delayed: 20, close: 20, callback: 4 },
+    home_services:  { sales: 45, answered: 55, missed: 25, delayed: 20, close: 35, callback: 4 },
+    professional:   { sales: 30, answered: 65, missed: 20, delayed: 15, close: 20, callback: 3 },
+    medical:        { sales: 40, answered: 60, missed: 22, delayed: 18, close: 45, callback: 6 },
+    retail:         { sales: 25, answered: 60, missed: 25, delayed: 15, close: 15, callback: 2 },
+    restaurant:     { sales: 20, answered: 70, missed: 20, delayed: 10, close: 40, callback: 1 },
+    auto:           { sales: 50, answered: 50, missed: 28, delayed: 22, close: 30, callback: 5 },
+    realestate:     { sales: 55, answered: 50, missed: 25, delayed: 25, close: 15, callback: 6 },
+    construction:   { sales: 40, answered: 50, missed: 30, delayed: 20, close: 25, callback: 8 },
+    fitness:        { sales: 35, answered: 60, missed: 22, delayed: 18, close: 30, callback: 3 }
+  };
+
+  const industrySelect = document.getElementById("ch_phone_industry");
+  if (industrySelect) {
+    industrySelect.addEventListener("change", () => {
+      const preset = INDUSTRY_PRESETS[industrySelect.value];
+      if (preset) {
+        document.getElementById("ch_phone_sales_pct").value = preset.sales;
+        document.getElementById("ch_phone_answered").value = preset.answered;
+        document.getElementById("ch_phone_miss").value = preset.missed;
+        document.getElementById("ch_phone_delayed").value = preset.delayed;
+        document.getElementById("ch_phone_conv").value = preset.close;
+        document.getElementById("ch_phone_callback_hrs").value = preset.callback;
+        calc();
+      }
+    });
+  }
+
+  // Phone split bar update
+  function updatePhoneSplitBar() {
+    const a = n("ch_phone_answered");
+    const m = n("ch_phone_miss");
+    const d = n("ch_phone_delayed");
+    const total = a + m + d || 1;
+    const bar = document.getElementById("phoneSplitBar");
+    if (bar) {
+      bar.children[0].style.width = ((a / total) * 100) + "%";
+      bar.children[1].style.width = ((m / total) * 100) + "%";
+      bar.children[2].style.width = ((d / total) * 100) + "%";
+    }
+  }
+
+  function calc() {
+    // Area 01
+    let p01_pain = 0, p01_recover = 0;
+    const chainParts = [];
+
+    // per-channel rollups for downstream pillars
+    const channelMonthlyLeads = {};
+    const channelMonthlyAnswered = {};
+    const channelMonthlyUnclosed = {};
+
+    // Track phone-specific routing for downstream
+    let phoneDelayedMonthly = 0;
+    let phoneCallbackHrs = 4;
+    let phoneUnclosedMonthly = 0;
+
+    CHANNELS.forEach(ch => {
+      const vol = n("ch_" + ch.id + "_vol");
+      const conv = n("ch_" + ch.id + "_conv") / 100;
+      const val = n("ch_" + ch.id + "_val");
+
+      let pain, recov, monthly;
+
+      if (ch.id === "phone") {
+        // ===== PHONE: custom split model =====
+        const salesPct = n("ch_phone_sales_pct") / 100;
+        const answeredPct = n("ch_phone_answered") / 100;
+        const missedPct = n("ch_phone_miss") / 100;
+        const delayedPct = n("ch_phone_delayed") / 100;
+        phoneCallbackHrs = n("ch_phone_callback_hrs");
+
+        const totalWeekly = vol;
+        const salesWeekly = totalWeekly * salesPct;
+        const salesMonthly = salesWeekly * 52 / 12;
+
+        const missedMonthly = salesMonthly * missedPct;
+        const delayedMonthly = salesMonthly * delayedPct;
+        const answeredMonthly = salesMonthly * answeredPct;
+        const unclosedMonthly = answeredMonthly * (1 - conv);
+
+        phoneDelayedMonthly = delayedMonthly;
+        phoneUnclosedMonthly = unclosedMonthly;
+
+        // Area 01 pain = only MISSED calls (truly lost leads)
+        const missedAnnual = missedMonthly * 12;
+        pain = missedAnnual * conv * val;
+        recov = pain * ch.recover;
+        monthly = recov / 12;
+
+        // Downstream routing
+        channelMonthlyLeads["phone"] = delayedMonthly; // phone → speed = delayed calls
+        channelMonthlyAnswered["phone"] = answeredMonthly;
+        channelMonthlyUnclosed["phone"] = unclosedMonthly;
+
+        // Update routing display
+        setTxt("pr_missed_ct", fmt1(missedMonthly));
+        setTxt("pr_delayed_ct", fmt1(delayedMonthly));
+        setTxt("pr_unclosed_ct", fmt1(unclosedMonthly));
+
+        // Update split bar
+        updatePhoneSplitBar();
+
+        // Math tooltip
+        const mpPain = document.getElementById("mp_phone_pain");
+        if (mpPain) mpPain.innerHTML = `
+          <div class="mp-title">Annual Opportunity (missed calls only)</div>
+          <div class="mp-step"><span class="mp-label">${totalWeekly}/wk × ${(salesPct*100).toFixed(0)}% sales</span><span class="mp-val">${fmt1(salesMonthly)}/mo sales calls</span></div>
+          <div class="mp-step"><span class="mp-label">× ${(missedPct*100).toFixed(0)}% missed</span><span class="mp-val">${fmt1(missedMonthly)}/mo missed</span></div>
+          <div class="mp-step"><span class="mp-label">× 12 months</span><span class="mp-val">${fmt1(missedAnnual)}/yr missed</span></div>
+          <div class="mp-step"><span class="mp-label">× ${(conv*100).toFixed(0)}% would close × $${fmt(val)}</span><span class="mp-val">= $${fmt(pain)}</span></div>
+        `;
+
+      } else {
+        // ===== NON-PHONE: standard model =====
+        const miss = n("ch_" + ch.id + "_miss") / 100;
+        const monthlyVol = vol; // already monthly
+        channelMonthlyLeads[ch.id] = monthlyVol;
+        channelMonthlyAnswered[ch.id] = monthlyVol * (1 - miss);
+        channelMonthlyUnclosed[ch.id] = channelMonthlyAnswered[ch.id] * (1 - conv);
+
+        pain = vol * ch.annualizer * miss * conv * val;
+        recov = pain * ch.recover;
+        monthly = recov / 12;
+
+        // Math tooltips
+        const annualVol = vol * ch.annualizer;
+        const missed = annualVol * miss;
+        const wouldClose = missed * conv;
+        const recoverPct = (ch.recover * 100).toFixed(0);
+
+        const mpPain = document.getElementById("mp_" + ch.id + "_pain");
+        if (mpPain) mpPain.innerHTML = `
+          <div class="mp-title">Annual Opportunity — how it's calculated</div>
+          <div class="mp-step"><span class="mp-label">${vol} per month × ${ch.annualizer}</span><span class="mp-val">${fmt(annualVol)}/yr</span></div>
+          <div class="mp-step"><span class="mp-label">× ${(miss*100).toFixed(0)}% missed</span><span class="mp-val">${fmt1(missed)} missed</span></div>
+          <div class="mp-step"><span class="mp-label">× ${(conv*100).toFixed(0)}% would close</span><span class="mp-val">${fmt1(wouldClose)} customers</span></div>
+          <div class="mp-step"><span class="mp-label">× $${fmt(val)} value</span><span class="mp-val">= $${fmt(pain)}</span></div>
+        `;
+      }
+
+      // Common tooltip updates for recover & monthly
+      const recoverPct = (ch.recover * 100).toFixed(0);
+      const mpRec = document.getElementById("mp_" + ch.id + "_recover");
+      if (mpRec) mpRec.innerHTML = `
+        <div class="mp-title">Recoverable — how it's calculated</div>
+        <div class="mp-step"><span class="mp-label">Annual opportunity</span><span class="mp-val">$${fmt(pain)}</span></div>
+        <div class="mp-step"><span class="mp-label">× ${recoverPct}% realistic capture</span><span class="mp-val">for ${ch.label}</span></div>
+        <div class="mp-step"><span class="mp-label">Recoverable</span><span class="mp-val">= $${fmt(recov)}</span></div>
+      `;
+
+      const mpMo = document.getElementById("mp_" + ch.id + "_monthly");
+      if (mpMo) mpMo.innerHTML = `
+        <div class="mp-title">Per Month — how it's calculated</div>
+        <div class="mp-step"><span class="mp-label">Annual recoverable</span><span class="mp-val">$${fmt(recov)}</span></div>
+        <div class="mp-step"><span class="mp-label">÷ 12 months</span><span class="mp-val">monthly average</span></div>
+        <div class="mp-step"><span class="mp-label">Per month</span><span class="mp-val">= $${fmt(monthly)}</span></div>
+      `;
+
+      setTxt("ch_" + ch.id + "_pain", fmt(pain));
+      setTxt("ch_" + ch.id + "_recover", fmt(recov));
+      setTxt("ch_" + ch.id + "_monthly", fmt(monthly));
+
+      if (activeChannels.has(ch.id)) {
+        p01_pain += pain;
+        p01_recover += recov;
+        if (pain > 0) chainParts.push(`<span class="v">${ch.label} $${fmt(pain)}</span>`);
+      }
+    });
+    const p01_monthly = p01_recover / 12;
+    setTxt("r_calls_pain", fmt(p01_pain));
+    setTxt("r_calls_recover", fmt(p01_recover));
+    setTxt("r_calls_monthly", fmt(p01_monthly));
+    setTxt("say_calls_pain", fmt(p01_pain));
+    setTxt("say_calls_monthly", fmt(p01_monthly));
+    const chain = $("pillar_channel_chain");
+    if (activeChannels.size === 0) chain.innerHTML = "Activate a channel above to see the math.";
+    else if (chainParts.length === 0) chain.innerHTML = "<span style='color:var(--ink-faint);'>Enter values in your active channels to populate the math.</span>";
+    else chain.innerHTML = chainParts.join(' <span class="op">+</span> ') + ` <span class="op">=</span> <span class="v" style="color:var(--accent);font-weight:600;">$${fmt(p01_pain)}</span>/yr`;
+
+    const calls_pain = p01_pain;
+    const calls_recover = p01_recover;
+
+    // Area 02 - Response Speed
+    // Auto-pull: non-phone channel leads + phone's delayed calls
+    const speedChannels = ["form", "sms", "email", "dm", "chat", "book"];
+    let speedAutoTotal = 0;
+    const speedBreakdownParts = [];
+    const channelLabels = { form: "Forms", sms: "SMS", email: "Email", dm: "DMs", chat: "Chat", book: "Booking" };
+
+    // Phone delayed calls feed into speed
+    if (activeChannels.has("phone") && phoneDelayedMonthly > 0) {
+      speedAutoTotal += phoneDelayedMonthly;
+      speedBreakdownParts.push(`<span class="ap-chan">Phone (delayed) ${fmt1(phoneDelayedMonthly)}</span>`);
+    }
+
+    speedChannels.forEach(id => {
+      if (activeChannels.has(id)) {
+        const v = channelMonthlyLeads[id] || 0;
+        speedAutoTotal += v;
+        if (v > 0) speedBreakdownParts.push(`<span class="ap-chan">${channelLabels[id]} ${fmt1(v)}</span>`);
+      }
+    });
+
+    // Push auto-value into input if in auto mode
+    const speedInput = document.getElementById("speed_leads");
+    if (autoPull.speed) {
+      speedInput.value = Math.round(speedAutoTotal);
+    }
+    // Update breakdown display
+    const speedBreakdown = document.getElementById("speed_breakdown");
+    if (speedBreakdown) {
+      if (!autoPull.speed) {
+        speedBreakdown.className = "ap-breakdown empty";
+        speedBreakdown.innerHTML = "Manual override active — the number above is your own input, not pulled from Area 01.";
+      } else if (speedBreakdownParts.length === 0) {
+        speedBreakdown.className = "ap-breakdown empty";
+        speedBreakdown.innerHTML = "Turn on non-phone channels in Area 01 — their volumes will be pulled here automatically.";
+      } else {
+        speedBreakdown.className = "ap-breakdown";
+        speedBreakdown.innerHTML = "Pulled from Area 01: " +
+          speedBreakdownParts.join('<span class="ap-op">+</span>') +
+          `<span class="ap-eq">= ${fmt1(speedAutoTotal)} leads / mo</span>`;
+      }
+    }
+
+    const sl = n("speed_leads");
+    const sc = n("speed_close") / 100;
+    const sf = n("speed_fast") / 100;
+    const sv = n("speed_value");
+    const lift = Math.max(0, sf - sc);
+    const speed_pain = sl * 12 * lift * sv;
+    const speed_customers = sl * 12 * lift;
+    const speed_monthly = speed_pain / 12;
+    setTxt("m_speed_leads", sl);
+    setTxt("m_speed_lift", (lift * 100).toFixed(0) + "%");
+    setTxt("m_speed_value", "$" + fmt(sv));
+    setTxt("m_speed_total", "$" + fmt(speed_pain));
+    setTxt("r_speed_pain", fmt(speed_pain));
+    setTxt("r_speed_customers", fmt1(speed_customers));
+    setTxt("r_speed_monthly", fmt(speed_monthly));
+    setTxt("say_speed_monthly", fmt(speed_monthly));
+
+    // Area 03
+    const th = n("time_hours");
+    const tr = n("time_rate");
+    const ta = n("time_auto") / 100;
+    const time_pain = th * 52 * tr * ta;
+    const time_hours_saved = th * 52 * ta;
+    const time_weeks = time_hours_saved / 40;
+    const time_monthly = time_pain / 12;
+    setTxt("m_time_hours", th);
+    setTxt("m_time_rate", "$" + tr);
+    setTxt("m_time_auto", (ta * 100).toFixed(0) + "%");
+    setTxt("m_time_total", "$" + fmt(time_pain));
+    setTxt("r_time_pain", fmt(time_pain));
+    setTxt("r_time_hours", fmt(time_hours_saved));
+    setTxt("r_time_weeks", fmt1(time_weeks));
+    setTxt("r_time_monthly", fmt(time_monthly));
+    setTxt("say_time_hours", th);
+    setTxt("say_time_weeks", fmt1(time_weeks));
+
+    // Area 04
+    const we = n("swivel_emps");
+    const wh = n("swivel_hops");
+    const wm = n("swivel_mins");
+    const wr = n("swivel_rate");
+    const swivel_hours = (we * wh * wm * 250) / 60;
+    const swivel_pain = swivel_hours * wr;
+    const swivel_monthly = swivel_pain / 12;
+    setTxt("m_swivel_emps", we);
+    setTxt("m_swivel_hops", wh);
+    setTxt("m_swivel_mins", wm);
+    setTxt("m_swivel_rate", "$" + wr);
+    setTxt("m_swivel_total", "$" + fmt(swivel_pain));
+    setTxt("r_swivel_pain", fmt(swivel_pain));
+    setTxt("r_swivel_hours", fmt(swivel_hours));
+    setTxt("r_swivel_monthly", fmt(swivel_monthly));
+    setTxt("say_swivel_pain", fmt(swivel_pain));
+    setTxt("say_swivel_hours", fmt(swivel_hours));
+
+    // Area 05 - Follow-up Gap
+    // Auto-pull: sum unclosed monthly leads from all active channels
+    // For phone: uses answered-but-not-closed from the split model
+    let fuAutoTotal = 0;
+    const fuBreakdownParts = [];
+    const fuChannelLabels = { phone: "Phone (unclosed)", form: "Forms", sms: "SMS", email: "Email", dm: "DMs", chat: "Chat", book: "Booking" };
+
+    CHANNELS.forEach(ch => {
+      if (activeChannels.has(ch.id)) {
+        const unclosed = channelMonthlyUnclosed[ch.id] || 0;
+        fuAutoTotal += unclosed;
+        if (unclosed > 0) fuBreakdownParts.push(`<span class="ap-chan">${fuChannelLabels[ch.id]} ${fmt1(unclosed)}</span>`);
+      }
+    });
+
+    const fuInput = document.getElementById("fu_leads");
+    if (autoPull.fu) {
+      fuInput.value = Math.round(fuAutoTotal);
+    }
+    const fuBreakdown = document.getElementById("fu_breakdown");
+    if (fuBreakdown) {
+      if (!autoPull.fu) {
+        fuBreakdown.className = "ap-breakdown empty";
+        fuBreakdown.innerHTML = "Manual override active — the number above is your own input, not pulled from Area 01.";
+      } else if (fuBreakdownParts.length === 0) {
+        fuBreakdown.className = "ap-breakdown empty";
+        fuBreakdown.innerHTML = "Turn on channels in Area 01 — unclosed lead volume will be calculated automatically.";
+      } else {
+        fuBreakdown.className = "ap-breakdown";
+        fuBreakdown.innerHTML = "Unclosed = answered leads × (1 − close rate): " +
+          fuBreakdownParts.join('<span class="ap-op">+</span>') +
+          `<span class="ap-eq">= ${fmt1(fuAutoTotal)} / mo</span>`;
+      }
+    }
+
+    const fl = n("fu_leads");
+    const fd = n("fu_dropped") / 100;
+    const fr = n("fu_recover") / 100;
+    const fv = n("fu_value");
+    const fu_pain = fl * 12 * fd * fr * fv;
+    const fu_customers = fl * 12 * fd * fr;
+    const fu_monthly = fu_pain / 12;
+    setTxt("m_fu_leads", fl);
+    setTxt("m_fu_dropped", (fd * 100).toFixed(0) + "%");
+    setTxt("m_fu_recover", (fr * 100).toFixed(0) + "%");
+    setTxt("m_fu_value", "$" + fmt(fv));
+    setTxt("m_fu_total", "$" + fmt(fu_pain));
+    setTxt("r_fu_pain", fmt(fu_pain));
+    setTxt("r_fu_customers", fmt1(fu_customers));
+    setTxt("r_fu_monthly", fmt(fu_monthly));
+    setTxt("say_fu_monthly", fmt(fu_monthly));
+
+    // Area 06 - Roll-up
+    const fee = n("fee_amount");
+    const setup = n("fee_setup");
+    const attr = n("fee_attrition") / 100;
+
+    const total_pain = calls_pain + speed_pain + time_pain + swivel_pain + fu_pain;
+    const total_recover_raw = calls_recover + speed_pain + time_pain + swivel_pain + fu_pain;
+    const total_save = total_recover_raw * (1 - attr);
+    const annual_fee = fee * 12 + setup;
+    const roi = annual_fee > 0 ? total_save / annual_fee : 0;
+    const payback = total_save > 0 ? (annual_fee / total_save) * 12 : 0;
+    const net = total_save - annual_fee;
+
+    setTxt("fee_total_pain", fmt(total_pain));
+    setTxt("fee_total_save", fmt(total_save));
+    setTxt("fee_attr_display", (attr * 100).toFixed(0) + "%");
+    setTxt("fee_roi", roi < 10 ? fmt1(roi) : fmt(roi));
+    setTxt("fee_payback", fmt1(payback));
+    setTxt("fee_net", fmt(net));
+
+    // Summary bar
+    setTxt("bar_pain", fmt(total_pain));
+    setTxt("bar_save", fmt(total_save));
+    setTxt("bar_ratio", roi < 10 ? fmt1(roi) : fmt(roi));
+
+    // ==== Area 07 Brief ====
+    setTxt("brief_total_save", fmt(total_save));
+    setTxt("brief_total_pain", fmt(total_pain));
+    setTxt("brief_total_save2", fmt(total_save));
+    setTxt("brief_fee_annual", fmt(annual_fee));
+    setTxt("brief_roi", roi < 10 ? fmt1(roi) : fmt(roi));
+    setTxt("brief_payback", fmt1(payback));
+    setTxt("brief_payback2", fmt1(payback));
+    setTxt("brief_net", fmt(net));
+    setTxt("brief_net2", fmt(net));
+    setTxt("brief_calls", fmt(calls_pain));
+    setTxt("brief_speed", fmt(speed_pain));
+    setTxt("brief_time", fmt(time_pain));
+    setTxt("brief_swivel", fmt(swivel_pain));
+    setTxt("brief_fu", fmt(fu_pain));
+
+    // Bar widths (normalized to largest)
+    const pillarVals = [calls_pain, speed_pain, time_pain, swivel_pain, fu_pain];
+    const max = Math.max(...pillarVals, 1);
+    const ids = ["bar_calls", "bar_speed", "bar_time", "bar_swivel", "bar_fu"];
+    ids.forEach((id, i) => {
+      const pct = max > 0 ? (pillarVals[i] / max) * 100 : 0;
+      const el = $(id);
+      if (el) el.style.width = pct + "%";
+    });
+
+    // Operator status strip
+    renderOpStatus({
+      total_pain, total_save, annual_fee, roi, payback,
+      pillars: {
+        calls: calls_pain,
+        speed: speed_pain,
+        time: time_pain,
+        swivel: swivel_pain,
+        fu: fu_pain
+      }
+    });
+  }
+
+  function renderOpStatus(ctx) {
+    const strip = $("op_status_strip");
+    const items = [];
+
+    // Overall ROI health
+    if (ctx.roi >= 10) items.push({ level: "good", lbl: "ROI Health", text: "Strong ratio — comfortably clears the 5× threshold for a credible engagement." });
+    else if (ctx.roi >= 5) items.push({ level: "good", lbl: "ROI Health", text: "Acceptable ratio — above the 5× threshold but room to strengthen the case." });
+    else if (ctx.roi >= 2) items.push({ level: "warn", lbl: "ROI Health", text: "Marginal ratio — under 5×. Either fee is too high or opportunities aren't significant enough." });
+    else items.push({ level: "bad", lbl: "ROI Health", text: "Weak ratio — consider whether this engagement is worth pursuing at current fee." });
+
+    // Strongest pillar
+    const entries = Object.entries(ctx.pillars);
+    const strongest = entries.reduce((a, b) => b[1] > a[1] ? b : a);
+    const strongestLabels = { calls: "Inquiry Capture", speed: "Response Speed", time: "Manual Workload", swivel: "System Friction", fu: "Follow-up Gap" };
+    if (strongest[1] > 0) items.push({ level: "good", lbl: "Lead With", text: `${strongestLabels[strongest[0]]} is the biggest pain — open the conversation there.` });
+
+    // Weakest (but only flag if more than one pillar has data)
+    const nonzero = entries.filter(e => e[1] > 0);
+    if (nonzero.length > 1) {
+      const weakest = nonzero.reduce((a, b) => b[1] < a[1] ? b : a);
+      if (weakest[1] < ctx.total_pain * 0.05) {
+        items.push({ level: "warn", lbl: "Skip / De-emphasize", text: `${strongestLabels[weakest[0]]} represents less than 5% of total — don't waste time on it.` });
+      }
+    }
+
+    // Payback
+    if (ctx.payback > 0 && ctx.payback <= 3) items.push({ level: "good", lbl: "Payback", text: `Sub-3-month payback. Strong close material.` });
+    else if (ctx.payback > 0 && ctx.payback <= 6) items.push({ level: "good", lbl: "Payback", text: `Payback under 6 months — healthy.` });
+    else if (ctx.payback > 12) items.push({ level: "warn", lbl: "Payback", text: `Payback over 12 months — soften the ask or strengthen the pillars.` });
+
+    strip.innerHTML = items.map(i => `<div class="op-status ${i.level}"><div class="op-lbl">${i.lbl}</div>${i.text}</div>`).join("");
+  }
+
+  // Wire up
+  document.querySelectorAll("input[type='number']").forEach(el => {
+    el.addEventListener("input", calc);
+  });
+
+  // Reset
+  const defaults = {
+    ch_phone_vol: 50, ch_phone_sales_pct: 45, ch_phone_answered: 55, ch_phone_miss: 25, ch_phone_delayed: 20, ch_phone_callback_hrs: 4, ch_phone_conv: 25, ch_phone_val: 2500,
+    ch_form_vol: 30, ch_form_miss: 35, ch_form_conv: 15, ch_form_val: 2500,
+    ch_sms_vol: 40, ch_sms_miss: 30, ch_sms_conv: 30, ch_sms_val: 2500,
+    ch_email_vol: 50, ch_email_miss: 25, ch_email_conv: 12, ch_email_val: 2500,
+    ch_dm_vol: 25, ch_dm_miss: 45, ch_dm_conv: 10, ch_dm_val: 2500,
+    ch_chat_vol: 35, ch_chat_miss: 50, ch_chat_conv: 20, ch_chat_val: 2500,
+    ch_book_vol: 60, ch_book_miss: 55, ch_book_conv: 35, ch_book_val: 2500,
+    speed_close: 10, speed_fast: 22, speed_value: 2500,
+    time_hours: 15, time_rate: 35, time_auto: 70,
+    swivel_emps: 4, swivel_hops: 8, swivel_mins: 3, swivel_rate: 32,
+    fu_dropped: 60, fu_recover: 10, fu_value: 2500,
+    fee_amount: 1000, fee_setup: 2500, fee_attrition: 15
+  };
+  $("resetBtn").addEventListener("click", () => {
+    Object.entries(defaults).forEach(([k, v]) => {
+      const el = $(k);
+      if (el) el.value = v;
+    });
+    $("biz_name").value = "";
+    setTxt("brief_biz", "[ Business Name ]");
+    setTxt("brief_biz_inline", "this business");
+    activeChannels.clear();
+    activeChannels.add("phone");
+    document.querySelectorAll(".chan-toggle").forEach(b => b.classList.toggle("on", b.dataset.chan === "phone"));
+    document.querySelectorAll(".chan-module").forEach(m => m.classList.toggle("hidden", m.dataset.mod !== "phone"));
+    // Reset auto-pull toggles to auto mode
+    autoPull.speed = true;
+    autoPull.fu = true;
+    ["speed_toggle", "fu_toggle"].forEach(tid => {
+      const t = document.getElementById(tid);
+      if (t) t.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.mode === "auto"));
+    });
+    $("speed_leads").setAttribute("readonly", "readonly");
+    $("fu_leads").setAttribute("readonly", "readonly");
+    updateZeroState();
+    calc();
+  });
+
+  calc();
+</script>
+
+</body>
+</html>
